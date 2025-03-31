@@ -14,8 +14,8 @@ if [ -f ~/xbot2_ws/setup.bash ]; then
 fi
 
 # Source docker setup if it exists
-if [ -f $SCRIPT_DIR/../docker/kyon-cetc-focal-ros1-xeno/setup.sh ]; then
-    source $SCRIPT_DIR/../docker/kyon-cetc-focal-ros1-xeno/setup.sh
+if [ -f $SCRIPT_DIR/../docker/kyon-cetc-focal-ros1/setup.sh ]; then
+    source $SCRIPT_DIR/../docker/kyon-cetc-focal-ros1/setup.sh
 fi
 
 # Check if concert_launcher is installed
