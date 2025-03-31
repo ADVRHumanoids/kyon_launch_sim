@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<launch>
+  <!-- Include the base world launch file -->
+  <include file="$(find kyon_mujoco)/launch/kyon_world.launch">
+    <arg name="arms" value="true"/>
+    <arg name="legs" value="true"/>
+    <arg name="sensors" value="true"/>
+    <arg name="payload" value="false"/>
+    <arg name="feet" value="true"/>
+    <arg name="wheels" value="false"/>
+    <arg name="steering_wheels" value="false"/>
+    <arg name="ft_sensors" value="false"/>
+    <arg name="velodyne" value="false"/>
+  </include>
+
+  <!-- Create publishers for sensor data -->
+  <node pkg="tf" type="static_transform_publisher" name="imu_broadcaster" 
+        args="0 0 0 0 0 0 pelvis imu_link 100" />
+
+  <!-- Additional simulation parameters -->
+  <param name="/use_sim_time" value="true"/>
+  <param name="/simulation/timestep" value="0.001"/>
+</launch>
