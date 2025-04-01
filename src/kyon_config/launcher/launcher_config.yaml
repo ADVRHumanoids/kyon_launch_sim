@@ -1,0 +1,63 @@
+context:
+  session: kyon_sim
+  params:
+    hw_type: sim
+  .defines:
+    - &docker-sim focal-ros1-dev-1
+
+# Simulation components
+roscore:
+  cmd: roscore
+  ready_check: rostopic list
+  docker: *docker-sim
+
+mujoco_sim:
+  cmd: roslaunch kyon_mujoco kyon_world.launch arms:=true legs:=true
+  ready_check: timeout 5 rostopic echo /joint_states -n 1
+  docker: *docker-sim
+  depends:
+    - roscore
+
+xbot2_sim:
+  cmd: xbot2-core --hw sim -C $(rospack find kyon_config)/xbot2/kyon_sim.yaml
+  ready_check: timeout 5 rostopic echo /xbotcore/joint_states -n 1
+  docker: *docker-sim
+  depends:
+    - mujoco_sim
+
+# Utilities for simulation
+xbot2_gui_server:
+  cmd: xbot2_gui_server gui/gui_server_config.yaml
+  docker: *docker-sim
+  depends:
+    - xbot2_sim
+  
+homing_sim:
+  cmd: rosservice call /xbotcore/homing/switch 1
+  persistent: false
+  docker: *docker-sim
+  depends:
+    - xbot2_sim
+
+zero_sim:
+  cmd: rosservice call /xbotcore/zero/switch 1
+  persistent: false
+  docker: *docker-sim
+  depends:
+    - xbot2_sim
+
+# Trajectory plugins for testing
+trj_sim:
+  cmd: rosservice call /xbotcore/trj/switch 1
+  persistent: false
+  docker: *docker-sim
+  depends:
+    - xbot2_sim
+
+# Convenience group
+sim_all:
+  cmd: echo "Starting full simulation environment"
+  persistent: false
+  depends:
+    - xbot2_sim
+    - xbot2_gui_server

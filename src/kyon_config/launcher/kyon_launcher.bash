@@ -9,13 +9,15 @@ if [ -f /opt/ros/noetic/setup.bash ]; then
 fi
 
 # Source workspace setup if it exists
-if [ -f ~/xbot2_ws/setup.bash ]; then
-    source ~/xbot2_ws/setup.bash
+# Updated to find the workspace root from the src directory structure
+WORKSPACE_ROOT="$( cd "$SCRIPT_DIR/../../.." &> /dev/null && pwd )"
+if [ -f $WORKSPACE_ROOT/devel/setup.bash ]; then
+    source $WORKSPACE_ROOT/devel/setup.bash
 fi
 
 # Source docker setup if it exists
-if [ -f $SCRIPT_DIR/../docker/kyon-cetc-focal-ros1/setup.sh ]; then
-    source $SCRIPT_DIR/../docker/kyon-cetc-focal-ros1/setup.sh
+if [ -f $SCRIPT_DIR/../../docker/setup.sh ]; then
+    source $SCRIPT_DIR/../../docker/setup.sh
 fi
 
 # Check if concert_launcher is installed
@@ -35,9 +37,7 @@ function print_help {
     echo ""
     echo "Available commands:"
     echo "  sim       - Start robot in simulation mode"
-    echo "  real      - Start robot with real hardware"
     echo "  sim_gui   - Start simulation GUI"
-    echo "  real_gui  - Start real robot GUI"
     echo "  status    - Check the status of running processes"
     echo "  kill      - Kill all running processes"
     echo "  monitor   - Show monitoring session for all processes"
@@ -50,17 +50,9 @@ case "$1" in
         echo "Starting robot in simulation mode..."
         concert_launcher run sim_all
         ;;
-    real)
-        echo "Starting robot with real hardware..."
-        concert_launcher run real_all
-        ;;
     sim_gui)
         echo "Starting simulation GUI..."
         concert_launcher run xbot2_gui_server --params hw_type:=sim
-        ;;
-    real_gui)
-        echo "Starting real robot GUI..."
-        concert_launcher run xbot2_gui_server
         ;;
     status)
         echo "Checking status of running processes..."
